@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AREWARD CASHIER — Redeem Points</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family:'Poppins',sans-serif; background:linear-gradient(135deg,#e0f7ff,#f7f9ff); margin:0; padding:20px; color:#333; }
+  h3,h4 { color:#1a73e8; text-align:center; margin-bottom:15px; }
+  .section { background:#ffffffcc; padding:20px; border-radius:15px; box-shadow:0 6px 12px rgba(0,0,0,0.1); margin-bottom:25px; }
+  input, textarea { width:calc(100% - 20px); padding:12px; margin:8px 0; border:1px solid #ccc; border-radius:10px; font-size:16px; }
+  input.uppercase { text-transform: uppercase; }
+  button { width:60%; padding:14px; margin:10px 0 0 0; background-color:#1a73e8; color:#fff; border:none; border-radius:10px; font-size:16px; cursor:pointer; display:block; margin-left:auto; margin-right:auto; transition:.3s; }
+  button:hover { background-color:#155ab6; }
+  .backBtn { width:40%; background-color:#6c757d; margin-bottom:20px; display:block; margin-left:auto; margin-right:auto; }
+  .backBtn:hover { background-color:#5a6268; }
+  #popupOverlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; z-index:1000; }
+  #popupBox { background:#fff; padding:25px 30px; border-radius:15px; box-shadow:0 8px 16px rgba(0,0,0,0.3); text-align:center; max-width:350px; width:85%; }
+  #popupBox p { margin-bottom:20px; font-weight:bold; font-size:17px; color:#333; }
+  #popupBox button { width:50%; background-color:#28a745; color:#fff; padding:12px; border:none; border-radius:10px; cursor:pointer; font-size:15px; }
+  #popupBox button:hover { background-color:#218838; }
+</style>
+</head>
+<body>
+
+<h3>AREWARD CASHIER — Redeem Points</h3>
+<button class="backBtn" onclick="goBack()"> back to POS </button>
+
+<div class="section">
+  <h4>Redeem Points</h4>
+  <input id="code" placeholder="Redeem Code">
+  <input id="staffRedeem" placeholder="Staff Name" class="uppercase">
+  <button onclick="redeem()">Redeem</button>
+</div>
+
+<div id="popupOverlay">
+  <div id="popupBox">
+    <p id="popupMessage"></p>
+    <button id="popupOk">OK</button>
+  </div>
+</div>
+
+<script>
+const cashierScriptURL = "https://script.google.com/macros/s/AKfycbwnhO6BWYCVf-9VWjuoa2E216dw8hVUHh-BHkixeTBQ92gEQHgprYDM6s9gUy0z0FPE4g/exec";
+
+// Popup
+function showPopup(message, callback){
+  const overlay = document.getElementById("popupOverlay");
+  const msg = document.getElementById("popupMessage");
+  const okBtn = document.getElementById("popupOk");
+  msg.innerText = message;
+  overlay.style.display = "flex";
+  okBtn.onclick = () => { overlay.style.display = "none"; if(callback) callback(); };
+}
+
+// Go Back
+function goBack(){ window.location.href="POSandreward.html"; }
+
+// Redeem Function
+function redeem(){
+  const code=document.getElementById("code").value;
+  const s=document.getElementById("staffRedeem").value;
+  if(!code||!s){ showPopup("Fill all fields!"); return; }
+  fetch(`${cashierScriptURL}?action=redeemWithCode&code=${code}&staff=${s}`)
+    .then(r=>r.text())
+    .then(txt=>showPopup(txt, () => { document.getElementById("code").value=""; }))
+    .catch(()=>showPopup("Error sending request!"));
+}
+</script>
+
+</body>
+</html>
